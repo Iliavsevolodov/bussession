@@ -1,0 +1,20 @@
+{
+  "name": "Business Session · Вологда",
+  "short_name": "Business Session",
+  "description": "Администрирование Business Session: участники, финансы, вход и корпоратив.",
+  "lang": "ru",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fffaf0",
+  "theme_color": "#ffd21c",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
