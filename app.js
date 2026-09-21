@@ -80,9 +80,11 @@
     const bsBalance = Number(summary.bs_balance || 0);
     const corpBalance = Number(summary.corporate_balance || 0);
     const total = bsBalance + corpBalance;
+    const totalCollected = Number(summary.bs_income || 0) + Number(summary.corporate_income || 0);
     ["bsBalance","bsBalanceFinance"].forEach(id => $(id).textContent = money(bsBalance));
     ["corporateBalance","corporateBalanceFinance"].forEach(id => $(id).textContent = money(corpBalance));
     ["totalBalance","totalBalanceFinance"].forEach(id => $(id).textContent = money(total));
+    if ($("totalCollectedFinance")) $("totalCollectedFinance").textContent = `Всего собрано ${money(totalCollected)}`;
     $("bsIncomeLabel").textContent = `Собрано ${money(summary.bs_income || 0)}`;
     $("corporateIncomeLabel").textContent = `Собрано ${money(summary.corporate_income || 0)}`;
     $("bsCount").textContent = summary.bs_count || 0;
