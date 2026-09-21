@@ -41,11 +41,20 @@
     const style = document.createElement("style");
     style.id = "copyListStyles";
     style.textContent = `
+      .app-header .page-title{
+        font-family:Manrope,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+        font-size:22px!important;
+        line-height:1.2!important;
+        letter-spacing:-.02em!important;
+        font-weight:800!important;
+        margin:6px 0 0!important;
+      }
       .section-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
       .copy-list-button{background:#fff!important;color:#17150f!important;border:1px solid rgba(23,21,15,.12)!important;box-shadow:0 10px 30px rgba(23,21,15,.06)!important}
       .copy-list-button:hover{border-color:#ffd21c!important;transform:translateY(-1px)}
       .copy-list-button.is-copied{background:#17150f!important;color:#fff!important;border-color:#17150f!important}
       @media (max-width:700px){
+        .app-header .page-title{font-size:20px!important;margin-top:5px!important}
         #view-bs .section-toolbar,
         #view-corporate .section-toolbar{
           flex-direction:column;
