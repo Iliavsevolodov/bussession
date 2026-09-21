@@ -6,6 +6,36 @@
   const db = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
   const adminPassword = () => sessionStorage.getItem("bs_admin_password") || "";
 
+  function ensureButtons() {
+    const configs = [
+      { view: "view-bs", id: "copyBsList", target: "bs" },
+      { view: "view-corporate", id: "copyCorporateList", target: "corporate" }
+    ];
+
+    configs.forEach(({ view, id, target }) => {
+      if (document.getElementById(id)) return;
+      const section = document.getElementById(view);
+      const toolbar = section?.querySelector(".section-toolbar");
+      const addButton = toolbar?.querySelector(`[data-add-target="${target}"]`);
+      if (!toolbar || !addButton) return;
+
+      let actions = toolbar.querySelector(".section-actions");
+      if (!actions) {
+        actions = document.createElement("div");
+        actions.className = "section-actions";
+        toolbar.appendChild(actions);
+        actions.appendChild(addButton);
+      }
+
+      const button = document.createElement("button");
+      button.id = id;
+      button.type = "button";
+      button.className = "primary-button compact copy-list-button";
+      button.innerHTML = '<i data-lucide="copy"></i><span>Скопировать список</span>';
+      actions.insertBefore(button, addButton);
+    });
+  }
+
   function installStyles() {
     if (document.getElementById("copyListStyles")) return;
     const style = document.createElement("style");
@@ -112,7 +142,10 @@
     }
   }
 
+  ensureButtons();
   installStyles();
+  window.lucide?.createIcons();
+
   const bsButton = document.getElementById("copyBsList");
   const corporateButton = document.getElementById("copyCorporateList");
   bsButton?.addEventListener("click", () => handleCopy(bsButton, "bs"));
