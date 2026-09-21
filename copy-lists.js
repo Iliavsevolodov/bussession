@@ -35,12 +35,21 @@
       .copy-list-button{background:#fff!important;color:#17150f!important;border:1px solid rgba(23,21,15,.12)!important;box-shadow:0 10px 30px rgba(23,21,15,.06)!important}
       .copy-list-button.is-copied{background:#17150f!important;color:#fff!important;border-color:#17150f!important}
 
+      #view-finance>.section-toolbar{align-items:flex-start!important}
       #view-finance .finance-balances{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
       #view-finance .finance-balances .balance-card{min-width:0}
       #view-finance .finance-balances .balance-card.dark{grid-column:1/-1!important}
-      .finance-card-meta{display:grid;gap:4px;margin-top:9px}
+      .finance-card-meta{display:block!important;margin-top:9px}
       .finance-card-meta small{display:block;font-size:11px;line-height:1.35;font-weight:700}
-      #view-finance .finance-balances .balance-card.dark .finance-card-meta{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      #view-finance .finance-balances .balance-card.dark .finance-card-meta{display:block!important}
+
+      .operations-panel-head{align-items:center!important;gap:10px!important}
+      .undo-wrap.finance-history-undo{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-end!important;gap:0!important;width:auto!important;margin-left:auto!important;flex:0 0 auto}
+      .undo-wrap.finance-history-undo .undo-caption{display:none!important}
+      .undo-wrap.finance-history-undo .undo-last-button{width:auto!important;min-width:0!important;min-height:40px!important;padding:0 11px!important;border-radius:12px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;background:#fff!important;color:#17150f!important;border:1px solid rgba(23,21,15,.14)!important;box-shadow:none!important;font-size:10.5px!important;font-weight:800!important}
+      .undo-wrap.finance-history-undo .undo-last-button span{display:inline!important;white-space:nowrap!important}
+      .undo-wrap.finance-history-undo .undo-last-button svg{width:16px!important;height:16px!important}
+      .undo-wrap.finance-history-undo .undo-last-button:disabled{opacity:.42!important;cursor:not-allowed!important}
 
       @media(max-width:700px){
         #view-finance .finance-balances{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
@@ -48,7 +57,10 @@
         #view-finance .finance-balances .balance-card strong{font-size:clamp(20px,6.8vw,30px)!important}
         #view-finance .finance-balances .balance-card>span{font-size:10px!important}
         #view-finance .finance-balances .balance-card.dark{grid-column:1/-1!important;min-height:126px!important}
-        .finance-card-meta small{font-size:9px!important}
+        .finance-card-meta small{font-size:10px!important}
+        .operations-panel-head>div:first-child{min-width:0}
+        .operations-panel-head h2{font-size:clamp(22px,7vw,29px)!important}
+        .undo-wrap.finance-history-undo .undo-last-button{min-height:38px!important;padding:0 10px!important;font-size:10px!important}
         #view-bs .section-toolbar,#view-corporate .section-toolbar{flex-direction:column;align-items:stretch!important;gap:12px;margin-bottom:14px}
         #view-bs .section-actions,#view-corporate .section-actions{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:10px}
         #view-bs .section-actions .compact,#view-corporate .section-actions .compact{width:100%!important;min-width:0;min-height:48px;padding:0 12px!important;border-radius:15px}
@@ -56,6 +68,41 @@
       }
     `;
     document.head.appendChild(s);
+  }
+
+  function arrangeFinanceUndo() {
+    const button = $('undoLastAction');
+    const history = $('operationsHistory');
+    const header = history?.closest('.panel')?.querySelector('.panel-head');
+    const wrap = button?.closest('.undo-wrap');
+    if (!button || !header || !wrap) return false;
+
+    header.classList.add('operations-panel-head');
+    wrap.classList.add('finance-history-undo');
+    if (wrap.parentElement !== header) header.appendChild(wrap);
+
+    if (!button.dataset.financeUndoUi) {
+      button.dataset.financeUndoUi = '1';
+      button.innerHTML = '<i data-lucide="undo-2"></i><span>Отменить</span>';
+      button.title = 'Отменить последнюю операцию';
+      button.setAttribute('aria-label', 'Отменить последнюю операцию');
+      window.lucide?.createIcons();
+    }
+    return true;
+  }
+
+  function watchFinanceUndo() {
+    if (arrangeFinanceUndo()) return;
+    const finance = $('view-finance');
+    if (!finance) return;
+    const observer = new MutationObserver(() => {
+      if (arrangeFinanceUndo()) observer.disconnect();
+    });
+    observer.observe(finance, { childList:true, subtree:true });
+    setTimeout(() => {
+      arrangeFinanceUndo();
+      observer.disconnect();
+    }, 2500);
   }
 
   async function rows(type) {
@@ -113,6 +160,7 @@
 
   ensureButtons();
   installStyles();
+  watchFinanceUndo();
   window.lucide?.createIcons();
   $('copyBsList')?.addEventListener('click',()=>handle($('copyBsList'),'bs'));
   $('copyCorporateList')?.addEventListener('click',()=>handle($('copyCorporateList'),'corporate'));
