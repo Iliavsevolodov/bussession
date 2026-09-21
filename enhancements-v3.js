@@ -7,6 +7,8 @@
   let deferredInstallPrompt = null;
   let currentEditState = null;
   let undoBusy = false;
+  let participantDecorateQueued = false;
+  let undoRefreshTimer = null;
 
   function toast(message, type = '') {
     const node = $('toast');
@@ -33,14 +35,14 @@
     addHeadTag('link[rel="manifest"]', () => {
       const el = document.createElement('link');
       el.rel = 'manifest';
-      el.href = './manifest.webmanifest?v=3';
+      el.href = './manifest.webmanifest?v=5';
       return el;
     });
     addHeadTag('link[rel="icon"]', () => {
       const el = document.createElement('link');
       el.rel = 'icon';
       el.type = 'image/svg+xml';
-      el.href = './icon.svg?v=3';
+      el.href = './icon.svg?v=5';
       return el;
     });
     addHeadTag('meta[name="apple-mobile-web-app-capable"]', () => {
@@ -64,7 +66,9 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js?v=3').catch(console.error);
+        navigator.serviceWorker.register('./service-worker.js?v=5', { updateViaCache: 'none' })
+          .then(reg => reg.update().catch(() => null))
+          .catch(console.error);
       });
     }
 
@@ -100,11 +104,13 @@
     button.className = 'icon-button';
     button.dataset.installApp = '1';
     button.title = 'Установить приложение';
-    button.innerHTML = '<i data-lucide="download"></i>';
+    button.setAttribute('aria-label', 'Установить приложение');
+    button.textContent = '↓';
+    button.style.fontSize = '25px';
+    button.style.fontWeight = '800';
     const last = header.lastElementChild;
     header.insertBefore(button, last || null);
     button.addEventListener('click', handleInstall);
-    window.lucide?.createIcons();
   }
 
   async function handleInstall() {
@@ -125,7 +131,7 @@
       modal.className = 'modal-backdrop open';
       modal.innerHTML = `
         <div class="modal-card" role="dialog" aria-modal="true">
-          <button class="modal-close" type="button" data-close-ios-install><i data-lucide="x"></i></button>
+          <button class="modal-close" type="button" data-close-ios-install aria-label="Закрыть">×</button>
           <span class="section-kicker">Установка на iPhone / iPad</span>
           <h2>Добавить на экран «Домой»</h2>
           <div class="pwa-steps">
@@ -138,8 +144,9 @@
       modal.addEventListener('click', e => {
         if (e.target === modal || e.target.closest('[data-close-ios-install]')) modal.classList.remove('open');
       });
-    } else modal.classList.add('open');
-    window.lucide?.createIcons();
+    } else {
+      modal.classList.add('open');
+    }
   }
 
   function installStyles() {
@@ -158,6 +165,7 @@
       .undo-caption{font-size:11px;max-width:280px;text-align:right;opacity:.58}
       .pwa-steps{display:grid;gap:12px;margin-top:18px}.pwa-steps>div{display:flex;align-items:flex-start;gap:12px;padding:14px;border-radius:16px;background:#f8f6ef}
       .pwa-steps b{width:30px;height:30px;display:grid;place-items:center;border-radius:10px;background:#ffd21c;flex:0 0 auto}.pwa-steps span{line-height:1.45}
+      .edit-glyph{font-size:17px;line-height:1}
       @media(max-width:700px){.edit-choice-grid{grid-template-columns:1fr}.undo-wrap{width:100%;align-items:stretch}.undo-caption{text-align:left;max-width:none}.undo-last-button{width:100%}}
     `;
     document.head.appendChild(style);
@@ -171,7 +179,7 @@
     modal.setAttribute('aria-hidden', 'true');
     modal.innerHTML = `
       <div class="modal-card" role="dialog" aria-modal="true">
-        <button class="modal-close" type="button" data-close-edit><i data-lucide="x"></i></button>
+        <button class="modal-close" type="button" data-close-edit aria-label="Закрыть">×</button>
         <span class="section-kicker">Участник</span>
         <h2>Редактировать</h2>
         <form id="editParticipantForm" class="stack-form">
@@ -185,7 +193,7 @@
           </div>
           <label id="editOvernightWrap" class="toggle-row hidden"><input id="editOvernight" type="checkbox" /><span><b>С ночёвкой 💤</b><small>+500 ₽ к корпоративу</small></span></label>
           <div id="editComplimentary" class="edit-complimentary hidden">⭐ Бесплатная регистрация: изменение списков и ночёвки не добавит оплату.</div>
-          <button id="editParticipantSubmit" class="primary-button" type="submit"><span>Сохранить изменения</span><i data-lucide="check"></i></button>
+          <button id="editParticipantSubmit" class="primary-button" type="submit"><span>Сохранить изменения</span></button>
         </form>
       </div>`;
     document.body.appendChild(modal);
@@ -194,7 +202,6 @@
     });
     $('editHasCorporate').addEventListener('change', syncEditOvernight);
     $('editParticipantForm').addEventListener('submit', saveParticipantEdit);
-    window.lucide?.createIcons();
   }
 
   function closeEditModal() {
@@ -221,10 +228,19 @@
       edit.className = 'mini-button';
       edit.dataset.editRegistration = remove.dataset.removeRegistration;
       edit.title = 'Редактировать участника';
-      edit.innerHTML = '<i data-lucide="pencil"></i>';
+      edit.setAttribute('aria-label', 'Редактировать участника');
+      edit.innerHTML = '<span class="edit-glyph" aria-hidden="true">✏️</span>';
       actions.insertBefore(edit, actions.firstChild);
     });
-    window.lucide?.createIcons();
+  }
+
+  function queueParticipantDecoration() {
+    if (participantDecorateQueued) return;
+    participantDecorateQueued = true;
+    requestAnimationFrame(() => {
+      participantDecorateQueued = false;
+      decorateParticipantRows();
+    });
   }
 
   async function openParticipantEdit(registrationId, button) {
@@ -285,7 +301,6 @@
     } finally {
       button.disabled = false;
       button.innerHTML = old;
-      window.lucide?.createIcons();
     }
   }
 
@@ -295,11 +310,10 @@
     const wrap = document.createElement('div');
     wrap.className = 'undo-wrap';
     wrap.innerHTML = `
-      <button id="undoLastAction" class="primary-button compact undo-last-button" type="button" disabled><i data-lucide="undo-2"></i><span>Отменить последнее</span></button>
+      <button id="undoLastAction" class="primary-button compact undo-last-button" type="button" disabled><span>↩️ Отменить последнее</span></button>
       <small id="undoLastCaption" class="undo-caption">Проверяем последнюю операцию…</small>`;
     toolbar.appendChild(wrap);
     $('undoLastAction').addEventListener('click', undoLastAction);
-    window.lucide?.createIcons();
     refreshUndoAction();
   }
 
@@ -319,6 +333,11 @@
     }
   }
 
+  function scheduleUndoRefresh() {
+    clearTimeout(undoRefreshTimer);
+    undoRefreshTimer = setTimeout(refreshUndoAction, 400);
+  }
+
   async function undoLastAction() {
     const button = $('undoLastAction');
     if (!button || button.disabled || undoBusy) return;
@@ -327,8 +346,7 @@
     undoBusy = true;
     button.disabled = true;
     const old = button.innerHTML;
-    button.innerHTML = '<i data-lucide="loader-circle"></i><span>Отменяем…</span>';
-    window.lucide?.createIcons();
+    button.innerHTML = '<span>Отменяем…</span>';
     try {
       const result = await rpc('admin_undo_last_action', { p_password: adminPassword() });
       toast(`Отменено: ${result?.title || title} ↩️`);
@@ -339,8 +357,18 @@
       button.innerHTML = old;
       undoBusy = false;
       refreshUndoAction();
-      window.lucide?.createIcons();
     }
+  }
+
+  function installNavigationFallback() {
+    document.addEventListener('click', event => {
+      const button = event.target.closest('[data-view]');
+      if (!button) return;
+      const view = button.dataset.view;
+      if (!view || !$(`view-${view}`)) return;
+      document.querySelectorAll('.view-section').forEach(el => el.classList.toggle('active', el.id === `view-${view}`));
+      document.querySelectorAll('[data-view]').forEach(el => el.classList.toggle('active', el.dataset.view === view));
+    }, true);
   }
 
   function setupAdminEnhancements() {
@@ -349,25 +377,30 @@
     createEditModal();
     installUndoButton();
     decorateParticipantRows();
+    installNavigationFallback();
 
-    const participantObserver = new MutationObserver(() => {
-      decorateParticipantRows();
-      clearTimeout(participantObserver.undoTimer);
-      participantObserver.undoTimer = setTimeout(refreshUndoAction, 450);
-    });
-    ['bsParticipants','corpParticipants','recentOperations','operationsHistory'].forEach(id => {
+    ['bsParticipants', 'corpParticipants'].forEach(id => {
       const node = $(id);
-      if (node) participantObserver.observe(node, { childList:true, subtree:true });
+      if (!node) return;
+      const observer = new MutationObserver(queueParticipantDecoration);
+      observer.observe(node, { childList: true, subtree: false });
+    });
+
+    ['recentOperations', 'operationsHistory'].forEach(id => {
+      const node = $(id);
+      if (!node) return;
+      const observer = new MutationObserver(scheduleUndoRefresh);
+      observer.observe(node, { childList: true, subtree: false });
     });
 
     const appObserver = new MutationObserver(() => {
       if (!$('adminApp').classList.contains('hidden')) {
-        decorateParticipantRows();
+        queueParticipantDecoration();
         installInstallButton();
-        refreshUndoAction();
+        scheduleUndoRefresh();
       }
     });
-    appObserver.observe($('adminApp'), { attributes:true, attributeFilter:['class'] });
+    appObserver.observe($('adminApp'), { attributes: true, attributeFilter: ['class'] });
 
     document.addEventListener('click', e => {
       const edit = e.target.closest('[data-edit-registration]');
