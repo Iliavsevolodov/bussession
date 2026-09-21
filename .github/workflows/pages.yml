@@ -24,6 +24,7 @@ jobs:
         run: |
           node --check app.js
           node --check checkin.js
+          node --check overnight.js
           node --check config.js
 
   deploy:
@@ -40,7 +41,7 @@ jobs:
       - name: Prepare static site
         run: |
           mkdir _site
-          cp index.html checkin.html styles.css config.js app.js checkin.js _site/
+          cp index.html checkin.html styles.css config.js app.js checkin.js overnight.js _site/
           touch _site/.nojekyll
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
