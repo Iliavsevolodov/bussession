@@ -165,7 +165,6 @@
       .undo-caption{font-size:11px;max-width:280px;text-align:right;opacity:.58}
       .pwa-steps{display:grid;gap:12px;margin-top:18px}.pwa-steps>div{display:flex;align-items:flex-start;gap:12px;padding:14px;border-radius:16px;background:#f8f6ef}
       .pwa-steps b{width:30px;height:30px;display:grid;place-items:center;border-radius:10px;background:#ffd21c;flex:0 0 auto}.pwa-steps span{line-height:1.45}
-      .edit-glyph{font-size:17px;line-height:1}
       @media(max-width:700px){.edit-choice-grid{grid-template-columns:1fr}.undo-wrap{width:100%;align-items:stretch}.undo-caption{text-align:left;max-width:none}.undo-last-button{width:100%}}
     `;
     document.head.appendChild(style);
@@ -220,6 +219,7 @@
 
   function decorateParticipantRows() {
     if (!$('adminApp')) return;
+    let added = false;
     document.querySelectorAll('#bsParticipants [data-remove-registration], #corpParticipants [data-remove-registration]').forEach(remove => {
       const actions = remove.closest('.participant-actions');
       if (!actions || actions.querySelector('[data-edit-registration]')) return;
@@ -229,9 +229,11 @@
       edit.dataset.editRegistration = remove.dataset.removeRegistration;
       edit.title = 'Редактировать участника';
       edit.setAttribute('aria-label', 'Редактировать участника');
-      edit.innerHTML = '<span class="edit-glyph" aria-hidden="true">✏️</span>';
+      edit.innerHTML = '<i data-lucide="pencil"></i>';
       actions.insertBefore(edit, actions.firstChild);
+      added = true;
     });
+    if (added) window.lucide?.createIcons();
   }
 
   function queueParticipantDecoration() {
