@@ -23,20 +23,24 @@
     style.id = "overnightToggleStyles";
     style.textContent = `
       .overnight-action {
+        width: 42px;
+        min-width: 42px;
+        height: 38px;
         min-height: 38px;
+        display: inline-grid;
+        place-items: center;
         border: 1px solid rgba(27,22,8,.10);
         border-radius: 12px;
-        padding: 0 11px;
+        padding: 0;
         background: #fff8d7;
         color: #5d4800;
-        font: 800 12px/1.1 Manrope, sans-serif;
-        white-space: nowrap;
+        font: 800 18px/1 Manrope, sans-serif;
         cursor: pointer;
         transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
         -webkit-tap-highlight-color: transparent;
       }
       .overnight-action:hover { transform: translateY(-1px); box-shadow: 0 7px 18px rgba(145,105,0,.12); }
-      .overnight-action:active { transform: scale(.98); }
+      .overnight-action:active { transform: scale(.96); }
       .overnight-action.active { background: #ffd72a; color: #171205; border-color: rgba(180,124,0,.18); }
       .overnight-action:disabled { opacity: .58; cursor: wait; transform: none; }
       .participant-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
@@ -65,10 +69,12 @@
           flex:0 0 auto;
         }
         .overnight-action {
+          width: 38px;
+          min-width: 38px;
+          height: 34px;
           min-height:34px;
-          padding:0 9px;
           border-radius:11px;
-          font-size:10px;
+          font-size:17px;
         }
       }
     `;
@@ -86,14 +92,17 @@
       const tag = row.querySelector(".tag");
       if (!remove || !actions || !tag) return;
 
-      const overnight = /С ночёвкой/i.test(tag.textContent || "");
+      const overnight = /С ночёвкой|💤/i.test(tag.textContent || "");
+      if (overnight) tag.textContent = "💤";
+
       const button = document.createElement("button");
       button.type = "button";
       button.className = `overnight-action${overnight ? " active" : ""}`;
       button.dataset.overnightRegistration = remove.dataset.removeRegistration;
       button.dataset.nextOvernight = overnight ? "false" : "true";
       button.title = overnight ? "Убрать ночёвку и вычесть 500 ₽" : "Добавить ночёвку и начислить 500 ₽";
-      button.textContent = overnight ? "💤 Ночёвка ✓" : "💤 +500 ₽";
+      button.setAttribute("aria-label", button.title);
+      button.textContent = "💤";
       actions.insertBefore(button, remove);
     });
   }
@@ -131,7 +140,7 @@
 
     button.disabled = true;
     const oldText = button.textContent;
-    button.textContent = "Сохраняем…";
+    button.textContent = "…";
 
     try {
       const { data, error } = await db.rpc("admin_set_corporate_overnight", {
@@ -144,9 +153,10 @@
       const result = data || {};
       button.classList.toggle("active", next);
       button.dataset.nextOvernight = next ? "false" : "true";
-      button.textContent = next ? "💤 Ночёвка ✓" : "💤 +500 ₽";
+      button.textContent = "💤";
       button.title = next ? "Убрать ночёвку и вычесть 500 ₽" : "Добавить ночёвку и начислить 500 ₽";
-      if (tag) tag.textContent = next ? "💤 С ночёвкой" : "Корпоратив";
+      button.setAttribute("aria-label", button.title);
+      if (tag) tag.textContent = next ? "💤" : "Корпоратив";
       if (fee && result.fee_amount !== undefined) fee.textContent = money(result.fee_amount);
 
       await refreshSummary(password);
