@@ -1,4 +1,4 @@
-const CACHE = 'business-session-v4';
+const CACHE = 'business-session-v5';
 const SHELL = [
   './',
   './index.html',
