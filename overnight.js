@@ -6,6 +6,7 @@
   const db = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
   const $ = (id) => document.getElementById(id);
   const money = (value) => `${new Intl.NumberFormat("ru-RU").format(Number(value || 0))} ₽`;
+  const returnViewKey = "bs_return_view";
 
   function toast(message, type = "") {
     const node = $("toast");
@@ -126,6 +127,9 @@
       toast(result.complimentary
         ? (next ? "Ночёвка добавлена 💤 · без начисления" : "Ночёвка убрана")
         : (next ? "Ночёвка добавлена · +500 ₽ 💤" : "Ночёвка убрана · −500 ₽"));
+
+      sessionStorage.setItem(returnViewKey, "corporate");
+      setTimeout(() => location.reload(), 650);
     } catch (error) {
       console.error(error);
       button.textContent = oldText;
@@ -135,6 +139,24 @@
     }
   });
 
+  function restoreViewAfterReload() {
+    const view = sessionStorage.getItem(returnViewKey);
+    if (!view) return;
+    let attempts = 0;
+    const timer = setInterval(() => {
+      attempts += 1;
+      const app = $("adminApp");
+      const button = document.querySelector(`.desktop-nav [data-view="${view}"]`);
+      if (app && !app.classList.contains("hidden") && button) {
+        sessionStorage.removeItem(returnViewKey);
+        button.click();
+        clearInterval(timer);
+      } else if (attempts > 50) {
+        clearInterval(timer);
+      }
+    }, 100);
+  }
+
   installStyles();
   const target = $("corpParticipants");
   if (target) {
@@ -142,4 +164,5 @@
     observer.observe(target, { childList: true, subtree: true });
   }
   enhanceCorporateList();
+  restoreViewAfterReload();
 })();
