@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#fffaf0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Business Session — вход</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css?v=1" />
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"><div class="orb orb-a"></div><div class="orb orb-b"></div><div class="noise"></div></div>
+  <main class="shell checkin-shell">
+    <section id="checkinLogin" class="login-view">
+      <form id="checkinLoginForm" class="login-card">
+        <div class="eyebrow"><i data-lucide="badge-check"></i><span>Вход на событие</span></div>
+        <h1>Регистрация<br><span>гостей</span></h1>
+        <p>Поиск участников, отметка присутствия и розыгрыш среди тех, кто в зале.</p>
+        <label class="input-wrap"><i data-lucide="key-round"></i><input id="checkinPassword" type="password" autocomplete="current-password" placeholder="Пароль входной зоны" required /></label>
+        <button id="checkinLoginButton" class="primary-button" type="submit"><span>Открыть список</span><i data-lucide="arrow-right"></i></button>
+      </form>
+    </section>
+
+    <section id="checkinApp" class="hidden">
+      <header class="checkin-header">
+        <div><div class="eyebrow"><i data-lucide="sparkles"></i><span>Business Session · Вологда</span></div><h1 class="page-title">Участники события</h1></div>
+        <button id="checkinLogout" class="icon-button" type="button"><i data-lucide="log-out"></i></button>
+      </header>
+
+      <div class="checkin-stats">
+        <article><span>В списке</span><strong id="checkinTotal">0</strong></article>
+        <article class="inside"><span>В зале</span><strong id="checkinInside">0</strong></article>
+        <article><span>Ещё не пришли</span><strong id="checkinWaiting">0</strong></article>
+      </div>
+
+      <div class="checkin-tabs">
+        <button class="checkin-tab active" data-checkin-view="list"><i data-lucide="list-checks"></i><span>Список</span></button>
+        <button class="checkin-tab" data-checkin-view="raffle"><i data-lucide="gift"></i><span>Розыгрыш</span></button>
+      </div>
+
+      <section id="checkin-list" class="checkin-view active">
+        <div class="sticky-search">
+          <div class="search-wrap large"><i data-lucide="search"></i><input id="checkinSearch" autocomplete="off" placeholder="Введите имя или фамилию" /></div>
+          <div class="filter-row checkin-filters"><button class="filter-chip active" data-attendance-filter="all">Все</button><button class="filter-chip" data-attendance-filter="inside">В зале</button><button class="filter-chip" data-attendance-filter="waiting">Не пришли</button></div>
+        </div>
+        <div id="checkinParticipants" class="checkin-list"></div>
+      </section>
+
+      <section id="checkin-raffle" class="checkin-view">
+        <div class="raffle-card">
+          <div class="raffle-icon"><i data-lucide="sparkles"></i></div>
+          <span class="section-kicker">Розыгрыш</span>
+          <h2>Случайный участник</h2>
+          <p>В выбор попадают только участники, отмеченные как находящиеся в зале.</p>
+          <div class="raffle-pool"><span>Сейчас в розыгрыше</span><strong><span id="rafflePoolCount">0</span> человек</strong></div>
+          <label class="toggle-row raffle-toggle"><input id="excludeWinners" type="checkbox" checked /><span><b>Не выбирать повторно победителей</b><small>Предыдущие победители исключаются из следующего розыгрыша</small></span></label>
+          <div id="raffleDisplay" class="raffle-display"><span>Готовы?</span><strong>🎁</strong></div>
+          <button id="drawWinner" class="primary-button raffle-button" type="button"><span>Выбрать победителя</span><i data-lucide="dices"></i></button>
+        </div>
+
+        <section class="panel winners-panel">
+          <div class="panel-head"><div><span class="section-kicker">История</span><h2>Победители</h2></div><i data-lucide="trophy"></i></div>
+          <div id="winnerHistory" class="winner-list"></div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="./config.js"></script>
+  <script src="./checkin.js?v=1"></script>
+</body>
+</html>
