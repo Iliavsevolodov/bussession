@@ -113,7 +113,14 @@
       const list=await rows(type); if(!list.length) throw new Error('EMPTY');
       const text=message(type,list); const ok=await copy(text);
       if(!ok) window.prompt('Скопируй список:',text);
-      else { button.classList.add('is-copied'); button.innerHTML='<i data-lucide="check"></i><span>Скопировано</span>'; window.lucide?.createIcons(); setTimeout(()=>{button.classList.remove('is-copied');button.innerHTML=old;window.lucide?.createIcons()},1800); return; }
+      else {
+        button.classList.add('is-copied');
+        button.innerHTML='<i data-lucide="check"></i><span>Скопировано</span>';
+        button.disabled=false;
+        window.lucide?.createIcons();
+        setTimeout(()=>{button.classList.remove('is-copied');button.innerHTML=old;window.lucide?.createIcons()},1800);
+        return;
+      }
     } catch(e) { console.error(e); }
     button.innerHTML=old; button.disabled=false; window.lucide?.createIcons();
   }
