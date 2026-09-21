@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#fffaf0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Business Session — администрирование</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css?v=1" />
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"><div class="orb orb-a"></div><div class="orb orb-b"></div><div class="noise"></div></div>
+
+  <main class="shell admin-shell">
+    <section id="adminLogin" class="login-view">
+      <form id="adminLoginForm" class="login-card">
+        <div class="eyebrow"><i data-lucide="shield-check"></i><span>Закрытая админка</span></div>
+        <h1>Business<br><span>Session</span></h1>
+        <p>Участники, финансы, расходы и корпоратив — в одном сервисе.</p>
+        <label class="input-wrap"><i data-lucide="key-round"></i><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Пароль" required /></label>
+        <button id="adminLoginButton" class="primary-button" type="submit"><span>Войти</span><i data-lucide="arrow-right"></i></button>
+      </form>
+    </section>
+
+    <section id="adminApp" class="hidden">
+      <header class="app-header">
+        <div>
+          <div class="eyebrow"><i data-lucide="sparkles"></i><span>Business Session · Вологда</span></div>
+          <h1 class="page-title">Управление событием</h1>
+        </div>
+        <button id="logoutButton" class="icon-button" type="button" title="Выйти"><i data-lucide="log-out"></i></button>
+      </header>
+
+      <nav class="desktop-nav" aria-label="Разделы">
+        <button class="nav-item active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span>Главная</span></button>
+        <button class="nav-item" data-view="bs"><i data-lucide="users"></i><span>Business Session</span></button>
+        <button class="nav-item" data-view="corporate"><i data-lucide="party-popper"></i><span>Корпоратив</span></button>
+        <button class="nav-item" data-view="finance"><i data-lucide="wallet-cards"></i><span>Финансы</span></button>
+      </nav>
+
+      <section id="view-dashboard" class="view-section active">
+        <div class="balance-grid">
+          <article class="balance-card yellow"><span>Счёт Business Session</span><strong id="bsBalance">0 ₽</strong><small id="bsIncomeLabel">Собрано 0 ₽</small></article>
+          <article class="balance-card cream"><span>Счёт корпоратива</span><strong id="corporateBalance">0 ₽</strong><small id="corporateIncomeLabel">Собрано 0 ₽</small></article>
+          <article class="balance-card dark"><span>Общий остаток</span><strong id="totalBalance">0 ₽</strong><small>БС + корпоратив</small></article>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-head"><div><span class="section-kicker">Участники</span><h2>Сводка</h2></div><i data-lucide="users-round"></i></div>
+            <div class="quick-stats">
+              <div><strong id="bsCount">0</strong><span>на БС</span></div>
+              <div><strong id="corpCount">0</strong><span>на корпоратив</span></div>
+              <div><strong id="overnightCount">0</strong><span>с ночёвкой 💤</span></div>
+              <div><strong id="insideCount">0</strong><span>в зале сейчас</span></div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><div><span class="section-kicker">Быстрое действие</span><h2>Добавить участника</h2></div><i data-lucide="user-plus"></i></div>
+            <form id="quickParticipantForm" class="stack-form">
+              <div class="form-grid two"><label><span>Имя</span><input id="quickFirstName" required placeholder="Иван" /></label><label><span>Фамилия</span><input id="quickLastName" required placeholder="Иванов" /></label></div>
+              <div class="choice-grid">
+                <label class="choice-card"><input id="quickBs" type="checkbox" checked /><span><i data-lucide="briefcase-business"></i><b>Business Session</b><small>+1 000 ₽</small></span></label>
+                <label class="choice-card"><input id="quickCorp" type="checkbox" /><span><i data-lucide="party-popper"></i><b>Корпоратив</b><small>+3 000 ₽</small></span></label>
+              </div>
+              <label id="quickOvernightWrap" class="toggle-row hidden"><input id="quickOvernight" type="checkbox" /><span><b>С ночёвкой 💤</b><small>Взнос за корпоратив станет 3 500 ₽</small></span></label>
+              <button class="primary-button" type="submit"><span>Добавить участника</span><i data-lucide="plus"></i></button>
+            </form>
+          </section>
+        </div>
+
+        <section class="panel recent-panel">
+          <div class="panel-head"><div><span class="section-kicker">Последние действия</span><h2>История операций</h2></div><button class="text-button" data-view-link="finance">Вся история</button></div>
+          <div id="recentOperations" class="operations-list"></div>
+        </section>
+      </section>
+
+      <section id="view-bs" class="view-section">
+        <div class="section-toolbar"><div><span class="section-kicker">Список события</span><h2>Business Session</h2><p id="bsSubtitle">0 участников · 0 ₽ собрано</p></div><button class="primary-button compact" data-add-target="bs"><i data-lucide="user-plus"></i><span>Добавить</span></button></div>
+        <div class="search-wrap"><i data-lucide="search"></i><input id="bsSearch" placeholder="Поиск по имени или фамилии" /></div>
+        <div id="bsParticipants" class="participant-list"></div>
+      </section>
+
+      <section id="view-corporate" class="view-section">
+        <div class="section-toolbar"><div><span class="section-kicker">Отдельный список</span><h2>Корпоратив</h2><p id="corpSubtitle">0 участников · 0 ₽ собрано</p></div><button class="primary-button compact" data-add-target="corporate"><i data-lucide="user-plus"></i><span>Добавить</span></button></div>
+        <div class="search-wrap"><i data-lucide="search"></i><input id="corpSearch" placeholder="Поиск по имени или фамилии" /></div>
+        <div id="corpParticipants" class="participant-list"></div>
+      </section>
+
+      <section id="view-finance" class="view-section">
+        <div class="section-toolbar"><div><span class="section-kicker">Деньги события</span><h2>Финансы</h2><p>Все поступления и расходы сохраняются в истории.</p></div></div>
+        <div class="balance-grid finance-balances">
+          <article class="balance-card yellow"><span>Business Session</span><strong id="bsBalanceFinance">0 ₽</strong></article>
+          <article class="balance-card cream"><span>Корпоратив</span><strong id="corporateBalanceFinance">0 ₽</strong></article>
+          <article class="balance-card dark"><span>Общий остаток</span><strong id="totalBalanceFinance">0 ₽</strong></article>
+        </div>
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-head"><div><span class="section-kicker">Новый расход</span><h2>Списать деньги</h2></div><i data-lucide="receipt-text"></i></div>
+            <form id="expenseForm" class="stack-form">
+              <label><span>Название расхода</span><input id="expenseTitle" required placeholder="Например: аренда, фотограф, значки" /></label>
+              <label><span>Сумма</span><div class="money-input"><input id="expenseAmount" inputmode="numeric" type="number" min="1" step="1" required placeholder="15000" /><b>₽</b></div></label>
+              <label><span>С какого счёта сначала списать</span><select id="expenseAccount"><option value="bs">Business Session</option><option value="corporate">Корпоратив</option></select></label>
+              <div class="info-note"><i data-lucide="split"></i><span>Если на выбранном счёте не хватит денег, остаток автоматически спишется со второго счёта. Если общей суммы недостаточно — операция не пройдёт.</span></div>
+              <button class="primary-button" type="submit"><span>Добавить расход</span><i data-lucide="minus"></i></button>
+            </form>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><div><span class="section-kicker">История</span><h2>Все операции</h2></div><i data-lucide="history"></i></div>
+            <div class="filter-row"><button class="filter-chip active" data-op-filter="all">Все</button><button class="filter-chip" data-op-filter="bs">БС</button><button class="filter-chip" data-op-filter="corporate">Корпоратив</button><button class="filter-chip" data-op-filter="expense">Расходы</button></div>
+            <div id="operationsHistory" class="operations-list tall"></div>
+          </section>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="participantModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <button id="closeParticipantModal" class="modal-close" type="button"><i data-lucide="x"></i></button>
+      <span class="section-kicker">Новый участник</span><h2 id="participantModalTitle">Добавить участника</h2>
+      <form id="participantForm" class="stack-form">
+        <div class="form-grid two"><label><span>Имя</span><input id="participantFirstName" required /></label><label><span>Фамилия</span><input id="participantLastName" required /></label></div>
+        <div class="choice-grid">
+          <label class="choice-card"><input id="participantBs" type="checkbox" /><span><i data-lucide="briefcase-business"></i><b>Business Session</b><small>+1 000 ₽</small></span></label>
+          <label class="choice-card"><input id="participantCorp" type="checkbox" /><span><i data-lucide="party-popper"></i><b>Корпоратив</b><small>+3 000 ₽</small></span></label>
+        </div>
+        <label id="participantOvernightWrap" class="toggle-row hidden"><input id="participantOvernight" type="checkbox" /><span><b>С ночёвкой 💤</b><small>Корпоратив: 3 500 ₽</small></span></label>
+        <button id="participantSubmit" class="primary-button" type="submit"><span>Сохранить</span><i data-lucide="check"></i></button>
+      </form>
+    </div>
+  </div>
+
+  <nav id="mobileNav" class="mobile-nav hidden" aria-label="Разделы">
+    <button class="mobile-nav-item active" data-view="dashboard"><i data-lucide="home"></i><span>Главная</span></button>
+    <button class="mobile-nav-item" data-view="bs"><i data-lucide="users"></i><span>БС</span></button>
+    <button class="mobile-nav-item" data-view="corporate"><i data-lucide="party-popper"></i><span>Корп.</span></button>
+    <button class="mobile-nav-item" data-view="finance"><i data-lucide="wallet-cards"></i><span>Финансы</span></button>
+  </nav>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="./config.js"></script>
+  <script src="./app.js?v=1"></script>
+</body>
+</html>
