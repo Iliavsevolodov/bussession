@@ -26,6 +26,8 @@ jobs:
           node --check checkin.js
           node --check overnight.js
           node --check copy-lists.js
+          node --check enhancements-v3.js
+          node --check service-worker.js
           node --check config.js
 
   deploy:
@@ -42,7 +44,9 @@ jobs:
       - name: Prepare static site
         run: |
           mkdir _site
-          cp index.html checkin.html styles.css config.js app.js checkin.js overnight.js copy-lists.js _site/
+          cp index.html checkin.html styles.css config.js app.js checkin.js overnight.js copy-lists.js enhancements-v3.js service-worker.js manifest.webmanifest icon.svg _site/
+          sed -i 's#</head>#<link rel="manifest" href="./manifest.webmanifest?v=3"><link rel="icon" type="image/svg+xml" href="./icon.svg?v=3"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Business Session"></head>#' _site/index.html _site/checkin.html
+          sed -i 's#</body>#<script src="./enhancements-v3.js?v=3"></script></body>#' _site/index.html _site/checkin.html
           touch _site/.nojekyll
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
