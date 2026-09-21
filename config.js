@@ -1,0 +1,8 @@
+window.APP_CONFIG = {
+  SUPABASE_URL: "",
+  SUPABASE_ANON_KEY: "",
+  EVENT_NAME: "Business Session · Вологда",
+  BS_FEE: 1000,
+  CORPORATE_FEE: 3000,
+  CORPORATE_OVERNIGHT_FEE: 3500
+};
