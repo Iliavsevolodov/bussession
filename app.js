@@ -13,9 +13,11 @@
   const money = (value) => `${new Intl.NumberFormat("ru-RU").format(Number(value || 0))} ₽`;
   const esc = (value) => String(value ?? "").replace(/[&<>'\"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'\"':"&quot;"}[c]));
   const formatDate = (value) => new Date(value).toLocaleString("ru-RU", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
+  const setText = (id, value) => { const node = $(id); if (node) node.textContent = value; };
 
   function toast(message, type = "") {
     const node = $("toast");
+    if (!node) return;
     node.textContent = message;
     node.className = `toast show ${type}`.trim();
     clearTimeout(toast.timer);
@@ -80,19 +82,26 @@
     const bsBalance = Number(summary.bs_balance || 0);
     const corpBalance = Number(summary.corporate_balance || 0);
     const total = bsBalance + corpBalance;
-    const totalCollected = Number(summary.bs_income || 0) + Number(summary.corporate_income || 0);
-    ["bsBalance","bsBalanceFinance"].forEach(id => $(id).textContent = money(bsBalance));
-    ["corporateBalance","corporateBalanceFinance"].forEach(id => $(id).textContent = money(corpBalance));
-    ["totalBalance","totalBalanceFinance"].forEach(id => $(id).textContent = money(total));
-    if ($("totalCollectedFinance")) $("totalCollectedFinance").textContent = `Всего собрано ${money(totalCollected)}`;
-    $("bsIncomeLabel").textContent = `Собрано ${money(summary.bs_income || 0)}`;
-    $("corporateIncomeLabel").textContent = `Собрано ${money(summary.corporate_income || 0)}`;
-    $("bsCount").textContent = summary.bs_count || 0;
-    $("corpCount").textContent = summary.corporate_count || 0;
-    $("overnightCount").textContent = summary.overnight_count || 0;
-    $("insideCount").textContent = summary.inside_count || 0;
-    $("bsSubtitle").textContent = `${summary.bs_count || 0} участников · ${money(summary.bs_income || 0)} собрано`;
-    $("corpSubtitle").textContent = `${summary.corporate_count || 0} участников · ${money(summary.corporate_income || 0)} собрано`;
+    const bsCollected = Number(summary.bs_income || 0);
+    const corpCollected = Number(summary.corporate_income || 0);
+    const totalCollected = bsCollected + corpCollected;
+
+    setText("bsBalanceFinance", money(bsBalance));
+    setText("corporateBalanceFinance", money(corpBalance));
+    setText("totalBalanceFinance", money(total));
+    setText("bsAfterExpensesFinance", `После расходов: ${money(bsBalance)}`);
+    setText("corpAfterExpensesFinance", `После расходов: ${money(corpBalance)}`);
+    setText("totalAfterExpensesFinance", `После расходов: ${money(total)}`);
+    setText("bsCollectedFinance", `Всего собрано: ${money(bsCollected)}`);
+    setText("corpCollectedFinance", `Всего собрано: ${money(corpCollected)}`);
+    setText("totalCollectedFinance", `Всего собрано: ${money(totalCollected)}`);
+
+    setText("bsCount", summary.bs_count || 0);
+    setText("corpCount", summary.corporate_count || 0);
+    setText("overnightCount", summary.overnight_count || 0);
+    setText("insideCount", summary.inside_count || 0);
+    setText("bsSubtitle", `${summary.bs_count || 0} участников · ${money(bsCollected)} собрано`);
+    setText("corpSubtitle", `${summary.corporate_count || 0} участников · ${money(corpCollected)} собрано`);
     renderParticipants("bs");
     renderParticipants("corporate");
     renderOperations();
@@ -103,6 +112,7 @@
     const rows = type === "bs" ? bsRows : corpRows;
     const input = $(type === "bs" ? "bsSearch" : "corpSearch");
     const target = $(type === "bs" ? "bsParticipants" : "corpParticipants");
+    if (!input || !target) return;
     const q = (input.value || "").trim().toLowerCase();
     const filtered = rows.filter(r => `${r.first_name} ${r.last_name}`.toLowerCase().includes(q));
     if (!filtered.length) {
@@ -123,13 +133,12 @@
   }
 
   function renderOperations() {
-    const recent = operations.slice(0, 6);
-    $("recentOperations").innerHTML = recent.length ? recent.map(operationHtml).join("") : '<div class="empty-state">Операций пока нет</div>';
     let rows = operations;
     if (operationFilter === "bs") rows = rows.filter(x => x.account === "bs");
     if (operationFilter === "corporate") rows = rows.filter(x => x.account === "corporate");
     if (operationFilter === "expense") rows = rows.filter(x => x.entry_type === "expense");
-    $("operationsHistory").innerHTML = rows.length ? rows.map(operationHtml).join("") : '<div class="empty-state">Нет операций по этому фильтру</div>';
+    const history = $("operationsHistory");
+    if (history) history.innerHTML = rows.length ? rows.map(operationHtml).join("") : '<div class="empty-state">Нет операций по этому фильтру</div>';
   }
 
   function operationHtml(op) {
@@ -154,6 +163,7 @@
     const corp = $(`${prefix}Corp`);
     const wrap = $(`${prefix}OvernightWrap`);
     const overnight = $(`${prefix}Overnight`);
+    if (!corp || !wrap || !overnight) return;
     wrap.classList.toggle("hidden", !corp.checked);
     if (!corp.checked) overnight.checked = false;
   }
