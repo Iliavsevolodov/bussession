@@ -12,28 +12,29 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Business Session" />
   <title>Business Session — администрирование</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=4" />
-  <link rel="icon" type="image/svg+xml" href="./icon.svg?v=4" />
+  <link rel="manifest" href="./manifest.webmanifest?v=5" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg?v=5" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./styles.css?v=20260922-1" />
+  <link rel="stylesheet" href="./styles.css?v=20260922-2" />
   <script>
     (() => {
-      const repairKey = 'bs_cache_repair_20260922_1';
-      if (!sessionStorage.getItem(repairKey)) {
-        sessionStorage.setItem(repairKey, '1');
-        if ('caches' in window) {
-          caches.keys().then(keys => Promise.all(
-            keys.filter(key => key.startsWith('business-session-') && key !== 'business-session-v4').map(key => caches.delete(key))
-          )).catch(() => {});
-        }
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(registrations => {
-            registrations.forEach(registration => registration.update().catch(() => {}));
-          }).catch(() => {});
-        }
+      const repairKey = 'bs_cache_repair_20260922_2';
+      if (sessionStorage.getItem(repairKey)) return;
+      sessionStorage.setItem(repairKey, '1');
+      const jobs = [];
+      if ('caches' in window) {
+        jobs.push(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('business-session-')).map(key => caches.delete(key)))).catch(() => null));
       }
+      if ('serviceWorker' in navigator) {
+        jobs.push(navigator.serviceWorker.getRegistrations().then(registrations => Promise.all(registrations.map(registration => registration.unregister()))).catch(() => null));
+      }
+      Promise.all(jobs).finally(() => {
+        if (!location.search.includes('repaired=2')) {
+          location.replace(`${location.pathname}?repaired=2`);
+        }
+      });
     })();
   </script>
 </head>
@@ -171,10 +172,10 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-  <script src="./config.js?v=20260922-1"></script>
-  <script src="./app.js?v=20260922-1"></script>
-  <script src="./overnight.js?v=20260922-1"></script>
-  <script src="./copy-lists.js?v=20260922-1"></script>
-  <script src="./enhancements-v3.js?v=20260922-1"></script>
+  <script src="./config.js?v=20260922-2"></script>
+  <script src="./app.js?v=20260922-2"></script>
+  <script src="./overnight.js?v=20260922-2"></script>
+  <script src="./copy-lists.js?v=20260922-2"></script>
+  <script src="./enhancements-v3.js?v=20260922-2"></script>
 </body>
 </html>
