@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./styles.css?v=20260922-2" />
+  <link rel="stylesheet" href="./styles.css?v=20260922-3" />
   <script>
     (() => {
       const repairKey = 'bs_cache_repair_20260922_2';
@@ -69,12 +69,6 @@
       </nav>
 
       <section id="view-dashboard" class="view-section active">
-        <div class="balance-grid">
-          <article class="balance-card yellow"><span>Счёт Business Session</span><strong id="bsBalance">0 ₽</strong><small id="bsIncomeLabel">Собрано 0 ₽</small></article>
-          <article class="balance-card cream"><span>Счёт корпоратива</span><strong id="corporateBalance">0 ₽</strong><small id="corporateIncomeLabel">Собрано 0 ₽</small></article>
-          <article class="balance-card dark"><span>Общий остаток</span><strong id="totalBalance">0 ₽</strong><small>БС + корпоратив</small></article>
-        </div>
-
         <div class="dashboard-grid">
           <section class="panel">
             <div class="panel-head"><div><span class="section-kicker">Участники</span><h2>Сводка</h2></div><i data-lucide="users-round"></i></div>
@@ -99,11 +93,6 @@
             </form>
           </section>
         </div>
-
-        <section class="panel recent-panel">
-          <div class="panel-head"><div><span class="section-kicker">Последние действия</span><h2>История операций</h2></div><button class="text-button" data-view-link="finance">Вся история</button></div>
-          <div id="recentOperations" class="operations-list"></div>
-        </section>
       </section>
 
       <section id="view-bs" class="view-section">
@@ -119,13 +108,25 @@
       </section>
 
       <section id="view-finance" class="view-section">
-        <div class="section-toolbar"><div><span class="section-kicker">Деньги события</span><h2>Финансы</h2><p>Все поступления и расходы сохраняются в истории.</p></div></div>
+        <div class="section-toolbar"><div><span class="section-kicker">Деньги события</span><h2>Финансы</h2><p>Баланс, расходы и вся история операций.</p></div></div>
         <div class="balance-grid finance-balances">
-          <article class="balance-card yellow"><span>Business Session</span><strong id="bsBalanceFinance">0 ₽</strong></article>
-          <article class="balance-card cream"><span>Корпоратив</span><strong id="corporateBalanceFinance">0 ₽</strong></article>
-          <article class="balance-card dark"><span>Общий остаток</span><strong id="totalBalanceFinance">0 ₽</strong><small id="totalCollectedFinance">Всего собрано 0 ₽</small></article>
+          <article class="balance-card yellow">
+            <span>Business Session</span>
+            <strong id="bsBalanceFinance">0 ₽</strong>
+            <div class="finance-card-meta"><small id="bsAfterExpensesFinance">После расходов: 0 ₽</small><small id="bsCollectedFinance">Всего собрано: 0 ₽</small></div>
+          </article>
+          <article class="balance-card cream">
+            <span>Корпоратив</span>
+            <strong id="corporateBalanceFinance">0 ₽</strong>
+            <div class="finance-card-meta"><small id="corpAfterExpensesFinance">После расходов: 0 ₽</small><small id="corpCollectedFinance">Всего собрано: 0 ₽</small></div>
+          </article>
+          <article class="balance-card dark">
+            <span>Общий остаток</span>
+            <strong id="totalBalanceFinance">0 ₽</strong>
+            <div class="finance-card-meta"><small id="totalAfterExpensesFinance">После расходов: 0 ₽</small><small id="totalCollectedFinance">Всего собрано: 0 ₽</small></div>
+          </article>
         </div>
-        <div class="dashboard-grid">
+        <div class="dashboard-grid finance-workspace">
           <section class="panel">
             <div class="panel-head"><div><span class="section-kicker">Новый расход</span><h2>Списать деньги</h2></div><i data-lucide="receipt-text"></i></div>
             <form id="expenseForm" class="stack-form">
@@ -137,7 +138,7 @@
             </form>
           </section>
           <section class="panel">
-            <div class="panel-head"><div><span class="section-kicker">История</span><h2>Все операции</h2></div><i data-lucide="history"></i></div>
+            <div class="panel-head"><div><span class="section-kicker">Операции</span><h2>История операций</h2></div><i data-lucide="history"></i></div>
             <div class="filter-row"><button class="filter-chip active" data-op-filter="all">Все</button><button class="filter-chip" data-op-filter="bs">БС</button><button class="filter-chip" data-op-filter="corporate">Корпоратив</button><button class="filter-chip" data-op-filter="expense">Расходы</button></div>
             <div id="operationsHistory" class="operations-list tall"></div>
           </section>
@@ -173,7 +174,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <script src="./config.js?v=20260922-2"></script>
-  <script src="./app.js?v=20260922-4"></script>
+  <script src="./app.js?v=20260922-5"></script>
   <script src="./overnight.js?v=20260922-3"></script>
   <script src="./copy-lists.js?v=20260922-4"></script>
   <script src="./enhancements-v3.js?v=20260922-4"></script>
