@@ -27,7 +27,7 @@
         <div class="eyebrow"><i data-lucide="badge-check"></i><span>Вход на событие</span></div>
         <h1>Регистрация<br><span>гостей</span></h1>
         <p>Поиск участников, отметка присутствия и розыгрыш среди тех, кто в зале.</p>
-        <label class="input-wrap"><i data-lucide="key-round"></i><input id="checkinPassword" type="password" autocomplete="current-password" placeholder="Пароль входной зоны" required /></label>
+        <label class="input-wrap"><i data-lucide="key-round"></i><input id="checkinPassword" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" enterkeyhint="done" autocomplete="current-password" placeholder="Пароль входной зоны" required /></label>
         <button id="checkinLoginButton" class="primary-button" type="submit"><span>Открыть список</span><i data-lucide="arrow-right"></i></button>
       </form>
     </section>
